@@ -1,14 +1,48 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.5.1.RELEASE</version>
-  </parent>
   <groupId>net.mfjassociates.tools</groupId>
   <artifactId>java-chest</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <dependencies>
+  <name>java-chest</name>
+  <url>http://github.com/marioja/java-chest/</url>
+  <description>List of useful Java tools mostly in the form of helper classes</description>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <developers>
+  	<developer>
+  		<name>Mario François Jauvin</name>
+  		<email>mfj@earthling.net</email>
+  		<organizationUrl>http://github.com/marioja</organizationUrl>
+  	</developer>
+  </developers>
+  <scm>
+  <connection>scm:git:git://github.com/marioja/java-chest.git</connection>
+  <developerConnection>scm:git:ssh://github.com:marioja/java-chest.git.git</developerConnection>
+  <url>http://github.com/marioja/java-chest/tree/master</url>
+</scm>
+<build>
+	<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+	</plugins>
+</build>
+<dependencies>
   	<dependency>
   		<groupId>org.apache.poi</groupId>
   		<artifactId>poi-ooxml</artifactId>
