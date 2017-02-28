@@ -17,7 +17,7 @@ import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 public class ClasspathHelper {
 
 	
-	private static final File DEFAULT_WORKBOOK_FILE;
+	public static final File DEFAULT_WORKBOOK_FILE;
 	private static final String DEFAULT_WORKBOOK_NAME = "java_classpath.xlsx";
 	
 	static {
@@ -47,7 +47,7 @@ public class ClasspathHelper {
 		wb.write(fos);
 		fos.close();
 	}
-	public static Sheet replaceSheet(Workbook wb, String sheetName) {
+	private static Sheet replaceSheet(Workbook wb, String sheetName) {
 		Sheet sheet = wb.getSheet(sheetName);
 		if (sheet!=null) wb.removeSheetAt(wb.getSheetIndex(sheet)); // zap existing sheet
 		sheet=wb.createSheet(sheetName);
