@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.mfjassociates.tools</groupId>
   <artifactId>java-chest</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.0</version>
   <name>java-chest</name>
   <url>http://github.com/marioja/java-chest/</url>
   <description>List of useful Java tools mostly in the form of helper classes</description>
