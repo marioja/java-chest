@@ -38,6 +38,13 @@ public class ClasspathHelper {
 
 	}
 	
+	public static void silentStoreClasspathToExcel(String sheetName) {
+		try {
+			storeClasspathToExcel(sheetName);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	public static void storeClasspathToExcel(String sheetName) throws IOException {
 		if (sheetName==null || sheetName.length()==0) throw new IllegalArgumentException("missing or invalid sheet name");
 		Workbook wb=openWorkbook(DEFAULT_WORKBOOK_FILE);
