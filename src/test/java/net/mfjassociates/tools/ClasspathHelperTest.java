@@ -22,5 +22,11 @@ public class ClasspathHelperTest {
 		assertNotNull("worksheet "+JUNIT_SHEET_NAME+" does not exist",wb.getSheet(JUNIT_SHEET_NAME));
 		assertEquals("first cell is incorrect", "Name", wb.getSheet(JUNIT_SHEET_NAME).getRow(0).getCell(0).getStringCellValue());
 	}
+	
+	@Test
+	public void testDuplicateSheet() throws IOException {
+		storeClasspathToExcel(JUNIT_SHEET_NAME);
+		storeClasspathToExcel(JUNIT_SHEET_NAME);
+	}
 
 }
