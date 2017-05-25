@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.mfjassociates.tools</groupId>
   <artifactId>java-chest</artifactId>
-  <version>1.0.4</version>
+  <version>1.0.5-SNAPSHOT</version>
   <name>java-chest</name>
   <url>http://github.com/marioja/java-chest/</url>
   <description>List of useful Java tools mostly in the form of helper classes</description>
@@ -104,6 +104,11 @@
   		<groupId>junit</groupId>
   		<artifactId>junit</artifactId>
   		<version>4.12</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>ch.qos.logback</groupId>
+  		<artifactId>logback-classic</artifactId>
+  		<version>1.2.2</version>
   	</dependency>
 </dependencies>
 	<properties>

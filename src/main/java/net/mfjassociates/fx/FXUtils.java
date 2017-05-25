@@ -3,6 +3,9 @@ package net.mfjassociates.fx;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.Cursor;
@@ -17,27 +20,35 @@ import javafx.util.Callback;
  */
 public class FXUtils {
 	
+	private static final Logger logger = LoggerFactory.getLogger(FXUtils.class);
+	
+	private FXUtils() {
+		throw new IllegalAccessError("Utility class should not be instantiated");
+	}
+	
 	/**
-	 * Supplier functional interface that can throw checked exceptions.
+	 * Supplier functional interface that can throw checked exceptions.  If the
+	 * checked exception is thrown, a RuntimeException will be thrown by the get
+	 * method with the cause set to the checked exception thrown.
 	 *  
 	 * @author Mario Jauvin
 	 *
 	 * @param <T> - type of the supplied object
-	 * @param <ET> - type of the exception that can be thrown
+	 * @param <E> - type of the exception that can be thrown
 	 */
 	@FunctionalInterface
-	public static interface ThrowingSupplier<T, ET extends Exception> extends Supplier<T> {
+	public static interface ThrowingSupplier<T, E extends Exception> extends Supplier<T> {
 		@Override
 		default T get() {
 			try {
 				return getThrows();
 			} catch (Exception e) {
-				e.printStackTrace();
-				throw new RuntimeException("get method returned a checked exception: "+e.getLocalizedMessage(), e);
+				logger.info("Exception inside get() method", e);
+				throw new IllegalStateException("get method returned a checked exception: "+e.getLocalizedMessage(), e);
 			}
 		}
 		
-		T getThrows() throws ET;
+		T getThrows() throws E;
 	}
 	
 	/**
@@ -45,21 +56,21 @@ public class FXUtils {
 	 *
 	 * @param <T> - type of the returned object
 	 * @param <P> - type of the object passed as the apply parameter
-	 * @param <ET> - type of the exception that can be thrown
+	 * @param <E> - type of the exception that can be thrown
 	 */
 	@FunctionalInterface
-	public static interface ThrowingFunction<T, P, ET extends Exception> extends Function<P, T> {
+	public static interface ThrowingFunction<T, P, E extends Exception> extends Function<P, T> {
 		@Override
 		default T apply(P parm) {
 			try {
 				return applyThrows(parm);
 			} catch (Exception e) {
-				e.printStackTrace();
-				throw new RuntimeException("apply method returned a checked exception: "+e.getLocalizedMessage(), e);
+				logger.info("Exception inside get() method", e);
+				throw new IllegalStateException("get method returned a checked exception: "+e.getLocalizedMessage(), e);
 			}
 		}
 		
-		T applyThrows(P parm) throws ET;
+		T applyThrows(P parm) throws E;
 	}
 	
 	/**
@@ -70,11 +81,11 @@ public class FXUtils {
 	 * @author Mario Jauvin
 	 *
 	 * @param <T> - type of the object to be returned by the Task.
-	 * @param <ET> - type of the exception that can be thrown in the get method
+	 * @param <E> - type of the exception that can be thrown in the get method
 	 */
-	public static class ResponsiveTask<T, ET extends Exception> extends Task<T> {
+	public static class ResponsiveTask<T, E extends Exception> extends Task<T> {
 		
-		private ThrowingSupplier<T, ET> worker;
+		private ThrowingSupplier<T, E> worker;
 		private Scene scene;
 		
 		/**
@@ -89,8 +100,8 @@ public class FXUtils {
 		 * running method this Task is processing in the background.
 		 * @param aScene - the {@link Scene} whose {@link Cursor} will be set to wait during processing
 		 */
-		public ResponsiveTask(Callback<ResponsiveTask<T, ET>, Boolean> aCompleted, Callback<ResponsiveTask<T, ET>, 
-				Void> aFailed, ThrowingSupplier<T, ET> aWorker, Scene aScene) {
+		public ResponsiveTask(Callback<ResponsiveTask<T, E>, Boolean> aCompleted, Callback<ResponsiveTask<T, E>, 
+				Void> aFailed, ThrowingSupplier<T, E> aWorker, Scene aScene) {
 			aScene.setCursor(Cursor.WAIT);
 			this.setOnSucceeded(event -> Platform.runLater(() -> {if (aCompleted.call(this)) scene.setCursor(Cursor.DEFAULT);}));
 			this.setOnFailed(event -> Platform.runLater(() -> {aFailed.call(this);scene.setCursor(Cursor.DEFAULT);}));
@@ -99,7 +110,7 @@ public class FXUtils {
 		}
 
 		@Override
-		protected T call() throws ET {
+		protected T call() throws E {
 			return worker.get();
 		}
 		
@@ -114,16 +125,16 @@ public class FXUtils {
 	 * @author Mario Jauvin
 	 *
 	 * @param <T> - type of the object to be returned by the Task.
-	 * @param <ET> - type of the exception that can be thrown in the get method
+	 * @param <E> - type of the exception that can be thrown in the get method
 	 * @see ResponsiveTask
 	 */
-	public static class ProgressResponsiveTask<T, ET extends Exception> extends ResponsiveTask<T, ET> {
+	public static class ProgressResponsiveTask<T, E extends Exception> extends ResponsiveTask<T, E> {
 		
 		private long maxSize;
-		private ThrowingFunction<T, ProgressResponsiveTask<T, ET>, ET> fworker;
+		private ThrowingFunction<T, ProgressResponsiveTask<T, E>, E> fworker;
 
-		public ProgressResponsiveTask(Callback<ResponsiveTask<T, ET>, Boolean> aCompleted, Callback<ResponsiveTask<T, ET>, 
-				Void> aFailed, ThrowingFunction<T, ProgressResponsiveTask<T, ET>, ET> aWorker, Scene aScene, long aMaxSize) {
+		public ProgressResponsiveTask(Callback<ResponsiveTask<T, E>, Boolean> aCompleted, Callback<ResponsiveTask<T, E>, 
+				Void> aFailed, ThrowingFunction<T, ProgressResponsiveTask<T, E>, E> aWorker, Scene aScene, long aMaxSize) {
 			super(aCompleted, aFailed, null, aScene);
 			this.maxSize=aMaxSize;
 			this.fworker=aWorker;
@@ -134,7 +145,7 @@ public class FXUtils {
 		}
 
 		@Override
-		protected T call() throws ET {
+		protected T call() throws E {
 			return fworker.apply(this);
 		}
 		
