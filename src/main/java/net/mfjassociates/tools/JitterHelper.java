@@ -67,6 +67,6 @@ public class JitterHelper implements Runnable {
 		}
 	}
 	private static void displayFinalStats() {
-		System.out.println(MessageFormat.format("Stats: mean={0}, variance={1}, min={2}, max={3}, std={4}", 0, stats.getMean(), stats.getVariance(), stats.getMin(), stats.getMax(), stats.getStandardDeviation()));
+		System.out.println(MessageFormat.format("Stats: mean={0}, variance={1}, min={2}, max={3}, std={4}", stats.getMean(), stats.getVariance(), stats.getMin(), stats.getMax(), stats.getStandardDeviation()));
 	}
 }
