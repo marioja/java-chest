@@ -20,7 +20,7 @@ public class JitterHelper implements Runnable {
 	};
 	private static final int DELAY = 3;
 	private static final long DELAY_NANO = DELAY * 1000000000l;
-	private static final DescriptiveStatistics stats=new DescriptiveStatistics();
+	private final DescriptiveStatistics stats=new DescriptiveStatistics();
 	public static void main(String[] args) {
 		JitterHelper jh=new JitterHelper();
 		jh.run();
@@ -38,6 +38,7 @@ public class JitterHelper implements Runnable {
 		Float fdiff=diff/lasti;
 		return fdiff.toString()+" "+UNITS[unitI];
 	}
+	private long samples=0;
 	@Override
 	public void run() {
 		try {
@@ -48,6 +49,7 @@ public class JitterHelper implements Runnable {
 			long diff;
 			while (true) {
 				c=cf.get();
+				samples++;
 				diff=DELAY_NANO - (c-p);
 				stats.addValue(diff);
 				cf=new CompletableFuture<Long>();
@@ -66,7 +68,7 @@ public class JitterHelper implements Runnable {
 			displayFinalStats();
 		}
 	}
-	private static void displayFinalStats() {
-		System.out.println(MessageFormat.format("Stats: mean={0}, variance={1}, min={2}, max={3}, std={4}", stats.getMean(), stats.getVariance(), stats.getMin(), stats.getMax(), stats.getStandardDeviation()));
+	private void displayFinalStats() {
+		System.out.println(MessageFormat.format("Stats: samples={5}, mean={0}, variance={1}, min={2}, max={3}, std={4}", stats.getMean(), stats.getVariance(), stats.getMin(), stats.getMax(), stats.getStandardDeviation(), samples));
 	}
 }
