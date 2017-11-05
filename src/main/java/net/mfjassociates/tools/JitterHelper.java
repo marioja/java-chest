@@ -1,6 +1,7 @@
 package net.mfjassociates.tools;
 
 import java.text.MessageFormat;
+import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -25,6 +26,7 @@ public class JitterHelper implements Runnable {
 		jh.run();
 	}
 	private static final String[] UNITS = new String[] {"nano","micro","milli","second"};
+	private static final long THRESHOLD = 1000000; // threshold to display data in nanoseconds (1 millisecond or more)
 	private static String convert(long diff) {
 		float lasti=1;
 		int unitI=-1;
@@ -49,7 +51,15 @@ public class JitterHelper implements Runnable {
 				diff=DELAY_NANO - (c-p);
 				stats.addValue(diff);
 				cf=new CompletableFuture<Long>();
-				System.out.println(MessageFormat.format("Difference between ticks={0}, mean={1}, variance={2}, min={3}, max={4}", diff, stats.getMean(), stats.getVariance(), stats.getMin(), stats.getMax()));
+				double mean = stats.getMean();
+				double std = stats.getStandardDeviation();
+				float nstd=1.0f;
+				double tolerance=nstd*std;
+				double delta=diff-mean;
+//				if (diff<(mean-tolerance) || diff > (mean+tolerance))
+//				System.out.println(diff);
+				if (Math.abs(diff)>THRESHOLD)
+				System.out.println(MessageFormat.format("{6}: \"{0}\", Difference between ticks= ,\"{0}\", mean= ,\"{1}\", variance= ,\"{2}\", min= ,\"{3}\", max= ,\"{4}\", std= ,\"{5}\"", diff, mean, stats.getVariance(), stats.getMin(), stats.getMax(), stats.getStandardDeviation(), new Date()));
 				p=c;
 			}
 		} catch (InterruptedException | ExecutionException e) {
@@ -57,6 +67,6 @@ public class JitterHelper implements Runnable {
 		}
 	}
 	private static void displayFinalStats() {
-		System.out.println(MessageFormat.format("Stats: mean={1}, variance={2}, min={3}, max={4}", 0, stats.getMean(), stats.getVariance(), stats.getMin(), stats.getMax()));
+		System.out.println(MessageFormat.format("Stats: mean={0}, variance={1}, min={2}, max={3}, std={4}", 0, stats.getMean(), stats.getVariance(), stats.getMin(), stats.getMax(), stats.getStandardDeviation()));
 	}
 }
